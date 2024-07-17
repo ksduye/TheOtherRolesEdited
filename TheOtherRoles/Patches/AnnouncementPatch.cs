@@ -43,9 +43,27 @@ public class ModNewsHistory
     public static void Init()
     {
         // 创建新公告时，不能删除旧公告   
-        { 
-            // TORE v1.0.6
+        {
+            // TORE v1.0.7
             var news = new ModNews
+            {
+                Number = 100003,
+                Title = "TheOtherRolesEdited v1.0.7",
+                SubTitle = "★★★★职业主场★★★★",
+                ShortTitle = "★TORE v1.0.7",
+                Text = "<size=100%>欢迎来到 TORE v1.0.7.</size>\n\n<size=125%>适配Among us v6.4s</size>\n"
+                    + "\n【声明】-本模组不隶属于 Among Us 或 Innersloth LLC 其中包含的内容未得到 Innersloth LLC 的认可或以其他方式赞助 此处包含的部分材料是 Innersloth LLC的财产 ©Innersloth"
+                    + "\n【对应官方版本】\n - TOR v.4.5.3\r"
+                    + "\n【新职业】\n - 内鬼职业：矿工 \n\r铸造自己的管道网络"
+                    + "\n【修复】\n修复yoyo职业BUG",
+                Date = "2024-7-8T00:00:00Z"
+            };
+            AllModNews.Add(news);
+        }
+        
+        { 
+           // TORE v1.0.6
+        var news = new ModNews
             {
                 Number = 100003,
                 Title = "TheOtherRolesEdited v1.0.6",

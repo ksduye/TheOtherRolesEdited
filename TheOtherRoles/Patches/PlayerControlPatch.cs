@@ -477,6 +477,13 @@ namespace TheOtherRolesEdited.Patches {
             }
         }
 
+        static void blackMailerSetTarget()
+        {
+            if (Blackmailer.blackmailer == null || Blackmailer.blackmailer != CachedPlayer.LocalPlayer.PlayerControl) return;
+            Blackmailer.currentTarget = setTarget();
+            setPlayerOutline(Medic.currentTarget, Blackmailer.blackmailedColor);
+        }
+
         public static void updatePlayerInfo() {
             Vector3 colorBlindTextMeetingInitialLocalPos = new Vector3(0.3384f, -0.16666f, -0.01f);
             Vector3 colorBlindTextMeetingInitialLocalScale = new Vector3(0.9f, 1f, 1f);
@@ -1079,6 +1086,8 @@ namespace TheOtherRolesEdited.Patches {
                 thiefSetTarget();
                 // yoyo
                 Silhouette.UpdateAll();
+                // Blackmailer
+                blackMailerSetTarget();
 
                 hackerUpdate();
                 swapperUpdate();

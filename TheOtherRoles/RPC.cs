@@ -66,6 +66,8 @@ namespace TheOtherRolesEdited
         Thief,
         Bomber,
         Yoyo,
+        Miner,
+        Blackmailer,
         Crewmate,
         Impostor,
         // Modifier ---
@@ -94,6 +96,8 @@ namespace TheOtherRolesEdited
         SetModifier,
         VersionHandshake,
         UseUncheckedVent,
+        UnblackmailPlayer,
+        BlackmailPlayer,
         UncheckedMurderPlayer,
         UncheckedCmdReportDeadBody,
         UncheckedExilePlayer,
@@ -107,6 +111,7 @@ namespace TheOtherRolesEdited
         EngineerFixSubmergedOxygen,
         EngineerUsedRepair,
         CleanBody,
+        Mine,
         MedicSetShielded,
         ShieldedMurderAttempt,
         TimeMasterShield,
@@ -167,6 +172,7 @@ namespace TheOtherRolesEdited
         // Other functionality
         ShareTimer,
         ShareGhostInfo,
+        SetMeetingChatOverlay,
     }
 
     public static class RPCProcedure
@@ -395,6 +401,13 @@ namespace TheOtherRolesEdited
                         case RoleId.Yoyo:
                             Yoyo.yoyo = player;
                             break;
+                        case RoleId.Miner:
+                            Miner.miner = player;
+                            break;
+                        case RoleId.Blackmailer:
+                            Blackmailer.blackmailer = player;
+                            break;
+
                     }
                 }
         }
@@ -801,10 +814,13 @@ namespace TheOtherRolesEdited
             if (player == Ninja.ninja) Ninja.clearAndReload();
             if (player == Bomber.bomber) Bomber.clearAndReload();
             if (player == Yoyo.yoyo) Yoyo.clearAndReload();
+            if (player == Miner.miner) Miner.clearAndReload();
+            if (player == Blackmailer.blackmailer) Blackmailer.clearAndReload();
 
             // Other roles
             if (player == Jester.jester) Jester.clearAndReload();
             if (player == Arsonist.arsonist) Arsonist.clearAndReload();
+            if (player == Miner.miner) Miner.clearAndReload();
             if (Guesser.isGuesser(player.PlayerId)) Guesser.clear(player.PlayerId);
             if (player == Jackal.jackal)
             { // Promote Sidekick and hence override the the Jackal or erase Jackal
@@ -1144,6 +1160,18 @@ namespace TheOtherRolesEdited
             }
         }
 
+        public static void unblackmailPlayer()
+        {
+            Blackmailer.blackmailed = null;
+            Blackmailer.alreadyShook = false;
+        }
+
+        public static void blackmailPlayer(byte playerId)
+        {
+            PlayerControl target = Helpers.playerById(playerId);
+            Blackmailer.blackmailed = target;
+        }
+
         public static void setBlanked(byte playerId, byte value)
         {
             PlayerControl target = Helpers.playerById(playerId);
@@ -1198,6 +1226,7 @@ namespace TheOtherRolesEdited
             if (target == Trickster.trickster) Trickster.trickster = thief;
             if (target == Cleaner.cleaner) Cleaner.cleaner = thief;
             if (target == Warlock.warlock) Warlock.warlock = thief;
+            if (target == Blackmailer.blackmailer) Blackmailer.blackmailer = thief;
             if (target == BountyHunter.bountyHunter) BountyHunter.bountyHunter = thief;
             if (target == Witch.witch)
             {
@@ -1210,6 +1239,7 @@ namespace TheOtherRolesEdited
             }
             if (target == Ninja.ninja) Ninja.ninja = thief;
             if (target == Bomber.bomber) Bomber.bomber = thief;
+            if (target == Miner.miner) Miner.miner = thief;
             if (target == Yoyo.yoyo)
             {
                 Yoyo.yoyo = thief;
@@ -1342,6 +1372,47 @@ namespace TheOtherRolesEdited
             PropHunt.speedboostActive.Add(playerId, PropHunt.speedboostDuration);
         }
 
+        public static void Mine(int ventId, PlayerControl role, byte[] buff, float zAxis)
+        {
+            Vector3 position = Vector3.zero;
+            position.x = BitConverter.ToSingle(buff, 0 * sizeof(float));
+            position.y = BitConverter.ToSingle(buff, 1 * sizeof(float));
+
+            var ventPrefab = UnityEngine.Object.FindObjectOfType<Vent>();
+            var vent = UnityEngine.Object.Instantiate(ventPrefab, ventPrefab.transform.parent);
+            vent.Id = ventId;
+            vent.transform.position = new Vector3(position.x, position.y, zAxis);
+
+            if (Miner.Vents.Count > 0)
+            {
+                var leftVent = Miner.Vents[^1];
+                vent.Left = leftVent;
+                leftVent.Right = vent;
+            }
+            else
+            {
+                vent.Left = null;
+            }
+            vent.Right = null;
+            vent.Center = null;
+            var allVents = ShipStatus.Instance.AllVents.ToList();
+            allVents.Add(vent);
+            ShipStatus.Instance.AllVents = allVents.ToArray();
+            Miner.Vents.Add(vent);
+            Miner.LastMined = DateTime.UtcNow;
+            if (SubmergedCompatibility.IsSubmerged)
+            {
+                vent.gameObject.layer = 12;
+                vent.gameObject.AddSubmergedComponent(SubmergedCompatibility.Classes.ElevatorMover); // just in case elevator vent is not blocked
+                if (vent.gameObject.transform.position.y > -7) vent.gameObject.transform.position = new Vector3(vent.gameObject.transform.position.x, vent.gameObject.transform.position.y, 0.03f);
+                else
+                {
+                    vent.gameObject.transform.position = new Vector3(vent.gameObject.transform.position.x, vent.gameObject.transform.position.y, 0.0009f);
+                    vent.gameObject.transform.localPosition = new Vector3(vent.gameObject.transform.localPosition.x, vent.gameObject.transform.localPosition.y, -0.003f);
+                }
+            }
+        }
+
         public enum GhostInfoTypes
         {
             HandcuffNoticed,
@@ -1469,6 +1540,11 @@ namespace TheOtherRolesEdited
             }
             if (Chameleon.chameleon.Any(x => x.PlayerId == Yoyo.yoyo.PlayerId)) // Make the Yoyo visible if chameleon!
                 Chameleon.lastMoved[Yoyo.yoyo.PlayerId] = Time.time;
+        }
+
+        internal static void setChatNotificationOverlay(byte playerId1, byte playerId2)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -1671,6 +1747,12 @@ namespace TheOtherRolesEdited
                 case (byte)CustomRPC.LawyerSetTarget:
                     RPCProcedure.lawyerSetTarget(reader.ReadByte());
                     break;
+                case (byte)CustomRPC.BlackmailPlayer:
+                    RPCProcedure.blackmailPlayer(reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.UnblackmailPlayer:
+                    RPCProcedure.unblackmailPlayer();
+                    break;
                 case (byte)CustomRPC.LawyerPromotesToPursuer:
                     RPCProcedure.lawyerPromotesToPursuer();
                     break;
@@ -1686,6 +1768,11 @@ namespace TheOtherRolesEdited
                     byte bloodyKiller = reader.ReadByte();
                     byte bloodyDead = reader.ReadByte();
                     RPCProcedure.bloody(bloodyKiller, bloodyDead);
+                    break;
+                case (byte)CustomRPC.SetMeetingChatOverlay:
+                    byte targetPlayerId = reader.ReadByte();
+                    byte localPlayerId = reader.ReadByte();
+                    RPCProcedure.setChatNotificationOverlay(localPlayerId, targetPlayerId);
                     break;
                 case (byte)CustomRPC.SetFirstKill:
                     byte firstKill = reader.ReadByte();
@@ -1726,6 +1813,13 @@ namespace TheOtherRolesEdited
                     break;
                 case (byte)CustomRPC.YoyoBlink:
                     RPCProcedure.yoyoBlink(reader.ReadByte() == byte.MaxValue, reader.ReadBytesAndSize());
+                    break;
+                case (byte)CustomRPC.Mine:
+                    var newVentId = reader.ReadInt32();
+                    var role = Helpers.playerById(reader.ReadByte());
+                    var pos = reader.ReadBytesAndSize();
+                    var zAxis = reader.ReadSingle();
+                    RPCProcedure.Mine(newVentId, role, pos, zAxis);
                     break;
 
                 // Game mode

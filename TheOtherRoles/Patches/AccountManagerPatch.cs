@@ -12,7 +12,7 @@ public static class UpdateFriendCodeUIPatch
     public static void Prefix(AccountTab __instance)
     {
 
-        string credentialsText = string.Format($"<color=#FF0000> TheOtherRolesEdited </color> - {TheOtherRolesEditedPlugin.VersionString}" + " - ©️ 2024 - " + "<color=#00BFFF>毒液</color>" );
+        string credentialsText = string.Format($"{TheOtherRolesEditedPlugin.ModColor}{TheOtherRolesEditedPlugin.Id}</color> - {TheOtherRolesEditedPlugin.VersionString} By:<color=#00BFFF>{TheOtherRolesEditedPlugin.Dev}</color>");
         string versionText = $"{TheOtherRolesEditedPlugin.VersionString}";
 
 

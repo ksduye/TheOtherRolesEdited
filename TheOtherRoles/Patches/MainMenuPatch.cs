@@ -69,7 +69,7 @@ namespace TheOtherRolesEdited.Modules {
 
                 popUp.gameObject.SetActive(true);
                 string creditsString = @$"<align=""center""><u><b>TheOtherRolesEdited开发者</b></u>
-毒液
+{TheOtherRolesEditedPlugin.Dev}
 方块
 lezaiya
 Yu

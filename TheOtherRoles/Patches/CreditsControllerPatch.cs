@@ -13,7 +13,7 @@ public class CreditsControllerPatch
             {
                 //$"<color=#bd262a><size=150%>{GetString("FromChina")}</size></color>",
 
-                $"毒液 - 开发者(<color=#FF0000>TheOtherRoles</color>)",
+                $"{TheOtherRolesEditedPlugin.Dev} - 开发者(<color=#FF0000>TheOtherRoles</color>)",
                 $"YU - 贡献者(<color=#EEC900>MCI</color>)",
                 $"尤路丽丝 - 美工",
 
@@ -31,6 +31,7 @@ public class CreditsControllerPatch
 
                 // Sponsor
                 $"小叨院长",
+                $"<color=#FFFFFF>屑杰鱼</color>",
                 $"Night_瓜",
                 $"Slok",
                 $"...",

@@ -263,6 +263,12 @@ namespace TheOtherRolesEdited {
         public static CustomOption yoyoAdminTableCooldown;
         public static CustomOption yoyoSilhouetteVisibility;
 
+        public static CustomOption minerSpawnRate;
+        public static CustomOption minerCooldown;
+        
+        public static CustomOption blackmailerSpawnRate;
+        public static CustomOption blackmailerCooldown;
+
         public static CustomOption modifiersAreHidden;
 
         public static CustomOption modifierBait;
@@ -507,6 +513,12 @@ namespace TheOtherRolesEdited {
             yoyoHasAdminTable = CustomOption.Create(474, Types.Impostor, "拥有便携式地图", true, yoyoSpawnRate);
             yoyoAdminTableCooldown = CustomOption.Create(475, Types.Impostor, "便携式地图冷却时间", 20f, 2.5f, 120f, 2.5f, yoyoHasAdminTable);
             yoyoSilhouetteVisibility = CustomOption.Create(476, Types.Impostor, "人影可见性", new string[] { "0%", "10%", "20%", "30%", "40%", "50%" }, yoyoSpawnRate);
+
+            minerSpawnRate = CustomOption.Create(1120, Types.Impostor, cs(Miner.color, "矿工"), rates, null, true);
+            minerCooldown = CustomOption.Create(1121, Types.Impostor, "挖掘冷却时间", 25f, 10f, 60f, 2.5f, minerSpawnRate);
+
+            blackmailerSpawnRate = CustomOption.Create(710, Types.Impostor, cs(Blackmailer.color, "勒索者"), rates, null, true);
+            blackmailerCooldown = CustomOption.Create(711, Types.Impostor, "勒索冷却时间", 30f, 5f, 120f, 5f, blackmailerSpawnRate);
 
             guesserSpawnRate = CustomOption.Create(310, Types.Neutral, cs(Guesser.color, "赌怪"), rates, null, true);
             guesserIsImpGuesserRate = CustomOption.Create(311, Types.Neutral, "赌怪是内鬼的机率", rates, guesserSpawnRate);

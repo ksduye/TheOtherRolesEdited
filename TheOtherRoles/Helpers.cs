@@ -16,6 +16,7 @@ using TheOtherRolesEdited.CustomGameModes;
 using Reactor.Utilities.Extensions;
 using AmongUs.GameOptions;
 using TheOtherRolesEdited.Patches;
+using System.Collections;
 
 namespace TheOtherRolesEdited {
 
@@ -115,6 +116,25 @@ namespace TheOtherRolesEdited {
             */
         }
 
+        public static IEnumerator BlackmailShhh()
+        {
+            //Helpers.showFlash(new Color32(49, 28, 69, byte.MinValue), 3f, "Blackmail", false, 0.75f);
+            yield return HudManager.Instance.CoFadeFullScreen(Color.clear, new Color(0f, 0f, 0f, 0.98f));
+            var TempPosition = HudManager.Instance.shhhEmblem.transform.localPosition;
+            var TempDuration = HudManager.Instance.shhhEmblem.HoldDuration;
+            HudManager.Instance.shhhEmblem.transform.localPosition = new Vector3(
+                HudManager.Instance.shhhEmblem.transform.localPosition.x,
+                HudManager.Instance.shhhEmblem.transform.localPosition.y,
+                HudManager.Instance.FullScreen.transform.position.z + 1f);
+            HudManager.Instance.shhhEmblem.TextImage.text = "你已被禁言";
+            HudManager.Instance.shhhEmblem.HoldDuration = 2.5f;
+            yield return HudManager.Instance.ShowEmblem(true);
+            HudManager.Instance.shhhEmblem.transform.localPosition = TempPosition;
+            HudManager.Instance.shhhEmblem.HoldDuration = TempDuration;
+            yield return HudManager.Instance.CoFadeFullScreen(new Color(0f, 0f, 0f, 0.98f), Color.clear);
+            yield return null;
+        }
+
         public static string readTextFromResources(string path) {
             Assembly assembly = Assembly.GetExecutingAssembly();
             Stream stream = assembly.GetManifestResourceStream(path);
@@ -204,6 +224,16 @@ namespace TheOtherRolesEdited {
             }
             
             return cs(roleInfo.color, $"{roleInfo.name}: {roleInfo.shortDescription}");
+        }
+
+        public static int getAvailableId()
+        {
+            var id = 0;
+            while (true)
+            {
+                if (ShipStatus.Instance.AllVents.All(v => v.Id != id)) return id;
+                id++;
+            }
         }
 
         public static bool isD(byte playerId) {

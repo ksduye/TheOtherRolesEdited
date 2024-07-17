@@ -76,6 +76,8 @@ namespace TheOtherRolesEdited
         public static RoleInfo thief = new RoleInfo("强盗", Thief.color, "这些都是我的啦！", "先杀人再盗窃", RoleId.Thief, true);
         public static RoleInfo bomber = new RoleInfo("爆炸狂", Bomber.color, "我可是比纵火犯还喜欢烟花呢~", "炸死所有船员", RoleId.Bomber);
         public static RoleInfo yoyo = new RoleInfo("Yo-Yo", Yoyo.color, "欻~~~~~~~~~~~", "瞬移到你所标记的位置", RoleId.Yoyo);
+        public static RoleInfo miner = new RoleInfo("矿工", Miner.color, "建立新的管道网络", "建立新的管道", RoleId.Miner);
+        public static RoleInfo blackmailer = new RoleInfo("勒索者", Blackmailer.color, "嘘~~~~~~~~~~~", "不许说话哦~", RoleId.Blackmailer);
 
         public static RoleInfo hunter = new RoleInfo("抓捕者", Palette.ImpostorRed, Helpers.cs(Palette.ImpostorRed, "击杀所有人"), "击杀所有人", RoleId.Impostor);
         public static RoleInfo hunted = new RoleInfo("躲藏者", Color.white, "躲躲藏藏又是一年", "躲藏", RoleId.Crewmate);
@@ -115,6 +117,8 @@ namespace TheOtherRolesEdited
             ninja,
             bomber,
             yoyo,
+            miner,
+            blackmailer,
             goodGuesser,
             badGuesser,
             lover,
@@ -205,6 +209,8 @@ namespace TheOtherRolesEdited
             if (p == Ninja.ninja) infos.Add(ninja);
             if (p == Bomber.bomber) infos.Add(bomber);
             if (p == Yoyo.yoyo) infos.Add(yoyo);
+            if (p == Miner.miner) infos.Add(miner);
+            if (p == Blackmailer.blackmailer) infos.Add(blackmailer);
             if (p == Detective.detective) infos.Add(detective);
             if (p == TimeMaster.timeMaster) infos.Add(timeMaster);
             if (p == Medic.medic) infos.Add(medic);

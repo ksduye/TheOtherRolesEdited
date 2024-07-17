@@ -32,8 +32,10 @@ namespace TheOtherRolesEdited
     
     public class TheOtherRolesEditedPlugin : BasePlugin
     {
-        public const string Id = "me.ksduye.TheOtherRolesEdited";
-        public const string VersionString = "1.0.6";
+        public const string Id = "TheOtherRolesEdited";
+        public const string VersionString = "1.0.7.1";
+        public const string Dev = "毒液";
+        public const string ModColor = "<color=#FF0000>";
         public static uint betaDays = 0;  // amount of days for the build to be usable (0 for infinite!)
 
         public static Version Version = Version.Parse(VersionString);

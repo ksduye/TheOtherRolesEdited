@@ -16,24 +16,24 @@ namespace TheOtherRolesEdited.Patches
     {
         public static string PingTextColor = "";
         public static string fullCredentialsVersion =
-$@"<size=130%><color=#ff351f>TheOtherRolesEdited</color></size> v{TheOtherRolesEditedPlugin.Version.ToString() + (TheOtherRolesEditedPlugin.betaDays > 0 ? "-BETA" : "")}";
+$@"<size=130%><color=#ff351f>TheOtherRolesEdited</color></size> v{TheOtherRolesEditedPlugin.Version.ToString() + (TheOtherRolesEditedPlugin.betaDays > 0 ? "-BETA" : "-BETA")}";
         public static string fullCredentials =
         $@"<size=60%><color=#FF0000>TOR</color>模组作者:<color=#FCCE03FF>Eisbison</color>, <color=#FCCE03FF>EndOfFile</color>
 <color=#FCCE03FF>Thunderstorm584</color>, <color=#FCCE03FF>Mallöris</color> & <color=#FCCE03FF>Gendelo</color>
 美术:<color=#FCCE03FF>Bavari</color>
-<color=#FF0000>TORE</color>模组作者:<color=#FCCE03FF>毒液</color>
-美术:<color=#FCCE03FF>毒液</color> & <color=#FCCE03FF>尤路丽丝</color>
-中文翻译:<color=#FCCE03FF>毒液</color></size>";
+<color=#FF0000>TORE</color>模组作者:<color=#FCCE03FF>{TheOtherRolesEditedPlugin.Dev}</color>
+美术:<color=#FCCE03FF>{TheOtherRolesEditedPlugin.Dev}</color> & <color=#FCCE03FF>尤路丽丝</color>
+中文翻译:<color=#FCCE03FF>{TheOtherRolesEditedPlugin.Dev}</color></size>";
 
-        public static string mainMenuCredentials =
+        /*public static string mainMenuCredentials =
     $@"<color=#FF0000>TOR</color>模组作者:<color=#FCCE03FF>Eisbison</color>, <color=#FCCE03FF>Thunderstorm584</color>, <color=#FCCE03FF>EndOfFile</color>, <color=#FCCE03FF>Mallöris</color> & <color=#FCCE03FF>Gendelo</color>
 美术:<color=#FCCE03FF>Bavari</color>
-<color=#FF0000>TORE</color>模组作者:<color=#FCCE03FF>毒液</color></color>
-美术:<color=#FCCE03FF>毒液</color> & <color=#FCCE03FF>尤路丽丝</color>
-中文翻译:<color=#FCCE03FF>毒液</color>";
+<color=#FF0000>TORE</color>模组作者:<color=#FCCE03FF>{TheOtherRolesEditedPlugin.Dev}</color></color>
+美术:<color=#FCCE03FF>{TheOtherRolesEditedPlugin.Dev}</color> & <color=#FCCE03FF>尤路丽丝</color>
+中文翻译:<color=#FCCE03FF>{TheOtherRolesEditedPlugin.Dev}</color>";
 
         public static string contributorsCredentials =
-$@"<size=60%> <color=#FCCE03FF>特别感谢 Smeggy & Imp11 & 方块</color></size>";
+$@"<size=60%> <color=#FCCE03FF>特别感谢 Smeggy & Imp11 & 方块</color></size>";*/
 
         [HarmonyPatch(typeof(PingTracker), nameof(PingTracker.Update))]
         internal static class PingTrackerPatch
@@ -89,7 +89,7 @@ $@"<size=60%> <color=#FCCE03FF>特别感谢 Smeggy & Imp11 & 方块</color></siz
                     else if (TORMapOptions.gameMode == CustomGamemodes.PropHunt) gameModeText = $"变形躲猫猫模式";
                     if (gameModeText != "") gameModeText = Helpers.cs(Color.yellow, gameModeText) + "\n";
 
-                    __instance.text.text = $"{fullCredentialsVersion}\n<size=60%>{gameModeText + fullCredentials}\n"+$"{PingTextColor}延迟: {AmongUsClient.Instance.Ping}毫秒</size>";
+                    __instance.text.text = $"{fullCredentialsVersion}\n<size=60%>{gameModeText + fullCredentials}\n"+$"{PingTextColor}延迟: {AmongUsClient.Instance.Ping}毫秒</size></color>";
                     __instance.transform.localPosition = new Vector3(3.5f, __instance.transform.localPosition.y, __instance.transform.localPosition.z);
                 }
             }
@@ -115,7 +115,7 @@ $@"<size=60%> <color=#FCCE03FF>特别感谢 Smeggy & Imp11 & 方块</color></siz
 
                 renderer = torLogo.AddComponent<SpriteRenderer>();
                 loadSprites();
-                renderer.sprite = Helpers.loadSpriteFromResources("TheOtherRolesEdited.Resources.Banner.png", 300f);
+                renderer.sprite = null;
 
                 instance = __instance;
                 loadSprites();
@@ -123,7 +123,7 @@ $@"<size=60%> <color=#FCCE03FF>特别感谢 Smeggy & Imp11 & 方块</color></siz
                 renderer.sprite = EventUtility.isEnabled ? banner2Sprite : bannerSprite;
                 var credentialObject = new GameObject("credentialsTOR");
                 var credentials = credentialObject.AddComponent<TextMeshPro>();
-                credentials.SetText($"v{TheOtherRolesEditedPlugin.Version.ToString() + (TheOtherRolesEditedPlugin.betaDays > 0 ? "-BETA" : "")}\n<size=30f%>\n</size>{mainMenuCredentials}\n<size=30%>\n</size>{contributorsCredentials}");
+              //credentials.SetText($"v{TheOtherRolesEditedPlugin.Version.ToString() + (TheOtherRolesEditedPlugin.betaDays > 0 ? "-BETA" : "")}\n<size=30f%>\n</size>{mainMenuCredentials}\n<size=30%>\n</size>{contributorsCredentials}");
                 credentials.alignment = TMPro.TextAlignmentOptions.Center;
                 credentials.fontSize *= 0.05f;
 
@@ -149,9 +149,9 @@ $@"<size=60%> <color=#FCCE03FF>特别感谢 Smeggy & Imp11 & 方块</color></siz
 
             public static void loadSprites()
             {
-                if (bannerSprite == null) bannerSprite = Helpers.loadSpriteFromResources("TheOtherRolesEdited.Resources.Banner.png", 300f);
-                if (banner2Sprite == null) banner2Sprite = Helpers.loadSpriteFromResources("TheOtherRolesEdited.Resources.Banner2.png", 300f);
-                if (horseBannerSprite == null) horseBannerSprite = Helpers.loadSpriteFromResources("TheOtherRolesEdited.Resources.bannerTheHorseRoles.png", 300f);
+                if (bannerSprite == null) bannerSprite = null;
+                if (banner2Sprite == null) banner2Sprite = null;
+                if (horseBannerSprite == null) horseBannerSprite = null;
             }
 
             public static void updateSprite()

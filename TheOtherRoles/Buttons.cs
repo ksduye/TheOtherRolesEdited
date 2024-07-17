@@ -59,6 +59,8 @@ namespace TheOtherRolesEdited
         public static CustomButton bomberButton;
         public static CustomButton yoyoButton;
         public static CustomButton yoyoAdminTableButton;
+        public static CustomButton minerMineButton;
+        public static CustomButton blackmailerButton;
         public static CustomButton defuseButton;
         public static CustomButton zoomOutButton;
         private static CustomButton hunterLighterButton;
@@ -138,8 +140,11 @@ namespace TheOtherRolesEdited
             mayorMeetingButton.MaxTimer = GameManager.Instance.LogicOptions.GetEmergencyCooldown();
             trapperButton.MaxTimer = Trapper.cooldown;
             bomberButton.MaxTimer = Bomber.bombCooldown;
+            yoyoButton.MaxTimer = Yoyo.markCooldown;
             yoyoAdminTableButton.MaxTimer = Yoyo.adminCooldown;
             yoyoAdminTableButton.EffectDuration = 10f;
+            minerMineButton.MaxTimer = Miner.cooldown;
+            blackmailerButton.MaxTimer = Blackmailer.cooldown;
             hunterLighterButton.MaxTimer = Hunter.lightCooldown;
             hunterAdminTableButton.MaxTimer = Hunter.AdminCooldown;
             hunterArrowButton.MaxTimer = Hunter.ArrowCooldown;
@@ -348,6 +353,37 @@ namespace TheOtherRolesEdited
                 __instance,
                 KeyCode.F
             );
+
+            blackmailerButton = new CustomButton(
+              () => { // Action when Pressed
+                  if (Blackmailer.currentTarget != null)
+                  {
+                      MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(CachedPlayer.LocalPlayer.PlayerControl.NetId, (byte)CustomRPC.BlackmailPlayer, Hazel.SendOption.Reliable, -1);
+                      writer.Write(Blackmailer.currentTarget.PlayerId);
+                      AmongUsClient.Instance.FinishRpcImmediately(writer);
+                      RPCProcedure.blackmailPlayer(Blackmailer.currentTarget.PlayerId);
+                      blackmailerButton.Timer = blackmailerButton.MaxTimer;
+                  }
+              },
+              () => { return Blackmailer.blackmailer != null && Blackmailer.blackmailer == CachedPlayer.LocalPlayer.PlayerControl && !CachedPlayer.LocalPlayer.Data.IsDead; },
+              () => { // Could Use
+                  var text = "勒索";
+                  if (Blackmailer.blackmailed != null) text = Blackmailer.blackmailed.Data.PlayerName;
+               //   showTargetNameOnButtonExplicit(Blackmailer.currentTarget, blackmailerButton, text); //Show target name under button if setting is true
+                  return (Blackmailer.currentTarget != null && CachedPlayer.LocalPlayer.PlayerControl.CanMove);
+              },
+              () => { blackmailerButton.Timer = blackmailerButton.MaxTimer; },
+              Blackmailer.getBlackmailButtonSprite(),
+              CustomButton.ButtonPositions.upperRowLeft, //brb
+              __instance,
+              KeyCode.F,
+              true,
+              0f,
+              () => { },
+              false,
+              "勒索"
+          );
+
 
             // Janitor Clean
             janitorCleanButton = new CustomButton(
@@ -1067,6 +1103,43 @@ namespace TheOtherRolesEdited
                 CustomButton.ButtonPositions.upperRowRight,
                 __instance,
                 KeyCode.Q
+            );
+
+            minerMineButton = new CustomButton(
+                () => { /* On Use */
+                    minerMineButton.Timer = minerMineButton.MaxTimer;
+
+                    var writer = AmongUsClient.Instance.StartRpcImmediately(CachedPlayer.LocalPlayer.PlayerControl.NetId, (byte)CustomRPC.Mine, SendOption.Reliable, -1);
+                    var pos = CachedPlayer.LocalPlayer.PlayerControl.transform.position;
+                    byte[] buff = new byte[sizeof(float) * 2];
+                    Buffer.BlockCopy(BitConverter.GetBytes(pos.x), 0, buff, 0 * sizeof(float), sizeof(float));
+                    Buffer.BlockCopy(BitConverter.GetBytes(pos.y), 0, buff, 1 * sizeof(float), sizeof(float));
+
+                    var id = Helpers.getAvailableId();
+                    writer.Write(id);
+                    writer.Write(CachedPlayer.LocalPlayer.PlayerId);
+
+
+                    writer.WriteBytesAndSize(buff);
+
+
+                    writer.Write(0.01f);
+                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+                    RPCProcedure.Mine(id, Miner.miner, buff, 0.01f);
+                },
+                () => { /* Can See */ return Miner.miner != null && Miner.miner == CachedPlayer.LocalPlayer.PlayerControl && !CachedPlayer.LocalPlayer.Data.IsDead; },
+                () => {  /* Can Use */
+                    var hits = Physics2D.OverlapBoxAll(CachedPlayer.LocalPlayer.PlayerControl.transform.position, Miner.VentSize, 0);
+                    hits = hits.ToArray().Where(c => (c.name.Contains("Vent") || !c.isTrigger) && c.gameObject.layer != 8 && c.gameObject.layer != 5).ToArray();
+                    return (hits.Count == 0 && CachedPlayer.LocalPlayer.PlayerControl.CanMove);
+                },
+                () => {  /* On Meeting End */
+                    minerMineButton.Timer = minerMineButton.MaxTimer;
+                },
+                Miner.getMineButtonSprite(),
+                CustomButton.ButtonPositions.upperRowLeft, //brb
+                __instance,
+                KeyCode.V
             );
 
             // Eraser erase button
@@ -1918,6 +1991,7 @@ namespace TheOtherRolesEdited
                         yoyoButton.Sprite = Yoyo.getBlinkButtonSprite();
                         yoyoButton.Timer = 10f;
                         yoyoButton.HasEffect = false;
+                        yoyoButton.buttonText = "瞬移";
                     }
                     else
                     {
@@ -1937,6 +2011,7 @@ namespace TheOtherRolesEdited
                         yoyoButton.EffectDuration = Yoyo.blinkDuration;
                         yoyoButton.Timer = 10f;
                         yoyoButton.HasEffect = true;
+                        yoyoButton.buttonText = "返回...";
                         SoundEffectsManager.play("morphlingMorph");
                     }
                 },
@@ -1952,6 +2027,7 @@ namespace TheOtherRolesEdited
                         Yoyo.markedLocation = null;
                         yoyoButton.Timer = yoyoButton.MaxTimer;
                         yoyoButton.Sprite = Yoyo.getMarkButtonSprite();
+                        yoyoButton.buttonText = "标记位置";
                     }
                 },
                 Yoyo.getMarkButtonSprite(),
@@ -1995,13 +2071,14 @@ namespace TheOtherRolesEdited
                     yoyoButton.actionButton.cooldownTimerText.color = Palette.EnabledColor;
                     yoyoButton.HasEffect = false;
                     yoyoButton.Sprite = Yoyo.getMarkButtonSprite();
+                    yoyoButton.buttonText = "标记位置";
                     SoundEffectsManager.play("morphlingMorph");
                     if (Minigame.Instance)
                     {
                         Minigame.Instance.Close();
                     }
                 },
-                buttonText: ""
+                buttonText: "标记位置"
             );
 
             yoyoAdminTableButton = new CustomButton(

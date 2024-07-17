@@ -62,6 +62,8 @@ namespace TheOtherRolesEdited
             Trapper.clearAndReload();
             Bomber.clearAndReload();
             Yoyo.clearAndReload();
+            Miner.clearAndReload();
+            Blackmailer.clearAndReload();
 
             // Modifier
             Bait.clearAndReload();
@@ -154,6 +156,8 @@ namespace TheOtherRolesEdited
 
 
         }
+
+
 
         public static class Mayor {
             public static PlayerControl mayor;
@@ -1609,6 +1613,34 @@ namespace TheOtherRolesEdited
             witchVoteSavesTargets = CustomOptionHolder.witchVoteSavesTargets.getBool();
         }
     }
+    public class Miner
+    {
+        public readonly static List<Vent> Vents = new List<Vent>();
+        public static PlayerControl miner;
+        public KillButton _mineButton;
+        public static DateTime LastMined;
+        public static Sprite buttonSprite;
+
+        public static float cooldown = 30f;
+        public static Color color = Palette.ImpostorRed;
+
+        public bool CanPlace { get; set; }
+        public static Vector2 VentSize { get; set; }
+
+        public static void clearAndReload()
+        {
+            miner = null;
+            cooldown = CustomOptionHolder.minerCooldown.getFloat();
+        }
+
+        public static Sprite getMineButtonSprite()
+        {
+            if (buttonSprite) return buttonSprite;
+            buttonSprite = Helpers.loadSpriteFromResources("TheOtherRolesEdited.Resources.Mine.png", 115f);
+            return buttonSprite;
+        }
+    }
+
 
     public static class Ninja {
         public static PlayerControl ninja;
@@ -1650,6 +1682,48 @@ namespace TheOtherRolesEdited
             if (arrow?.arrow != null) UnityEngine.Object.Destroy(arrow.arrow);
             arrow = new Arrow(Color.black);
             if (arrow.arrow != null) arrow.arrow.SetActive(false);
+        }
+    }
+
+    public static class Blackmailer
+    {
+        public static PlayerControl blackmailer;
+        public static Color color = Palette.ImpostorRed;
+        public static Color blackmailedColor = Palette.White;
+
+        public static bool alreadyShook = false;
+        public static PlayerControl blackmailed;
+        public static PlayerControl currentTarget;
+        public static float cooldown = 30f;
+        private static Sprite blackmailButtonSprite;
+        private static Sprite overlaySprite;
+        public static Sprite getBlackmailOverlaySprite()
+        {
+            if (overlaySprite) return overlaySprite;
+            overlaySprite = Helpers.loadSpriteFromResources("TheOtherRolesEdited.Resources.BlackmailerOverlay.png", 100f);
+            return overlaySprite;
+        }
+
+        public static Sprite getBlackmailLetterSprite()
+        {
+            if (overlaySprite) return overlaySprite;
+            overlaySprite = Helpers.loadSpriteFromResources("TheOtherRolesEdited.Resources.BlackmailerLetter.png", 115f);
+            return overlaySprite;
+        }
+
+        public static Sprite getBlackmailButtonSprite()
+        {
+            if (blackmailButtonSprite) return blackmailButtonSprite;
+            blackmailButtonSprite = Helpers.loadSpriteFromResources("TheOtherRolesEdited.Resources.BlackmailerBlackmailButton.png", 115f);
+            return blackmailButtonSprite;
+        }
+
+        public static void clearAndReload()
+        {
+            blackmailer = null;
+            currentTarget = null;
+            blackmailed = null;
+            cooldown = CustomOptionHolder.blackmailerCooldown.getFloat();
         }
     }
 
