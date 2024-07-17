@@ -1446,4 +1446,4 @@ When a Prop dies, they will either join the Hunter team or die (setting).
 - 汉化由[毒液](https://github.com/ksduye) & [方块er](https://github.com/farthest001) 
 - 美术编辑:[毒液](https://github.com/ksduye)
 - TORE作者:[毒液](https://github.com/ksduye)& [方块er](https://github.com/farthest001) & [Yu](https://github.com/Night-GUA)
-- 贡献者:[lezaiya](https://github.com/LezaiYa) & [imp11](https://github.com/dabao40) & [水木年华]()
+- 贡献者:[lezaiya](https://github.com/LezaiYa) & [imp11](https://github.com/dabao40) & [水木年华]()# TheOtherRolesEdited
